@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from orchestrator.forms import FormPage
 from orchestrator.targets import Target
@@ -17,7 +17,7 @@ def initial_input_form_generator(subscription_id: UUIDstr) -> FormGenerator:
 
     class ModifyUserForm(FormPage):
         username: str = subscription.user.username
-        age: int | None = subscription.user.age
+        age: Optional[int] = subscription.user.age
         user_group_ids: user_group_selector() = [str(subscription.user.group.owner_subscription_id)]  # type:ignore
 
     user_input = yield ModifyUserForm

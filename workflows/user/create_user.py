@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import uuid4
 
 from orchestrator.db.models import ProductTable, SubscriptionTable
@@ -45,7 +45,7 @@ def initial_input_form_generator(product_name: str) -> FormGenerator:
             title = product_name
 
         username: str
-        age: int | None
+        age: Optional[int]
         user_group_ids: user_group_selector()  # type:ignore
 
     user_input = yield CreateUserForm
