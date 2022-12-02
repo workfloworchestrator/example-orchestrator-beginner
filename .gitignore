@@ -130,3 +130,9 @@ dmypy.json
 
 # PyCharm
 .idea/
+
+# workshop
+alembic.ini
+db-data/
+migrations/
+
