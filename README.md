@@ -38,7 +38,7 @@ Stop docker compose, copy the migrations to add the products and workflows
 to the database, and start the environment again:
 
 ```shell
-^C
+# ^C
 cp -av examples/*add_user_and_usergroup* migrations/versions/schema
 docker compose up
 ```
