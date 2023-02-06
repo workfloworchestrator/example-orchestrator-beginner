@@ -23,7 +23,7 @@ services:
     image: "ghcr.io/workfloworchestrator/orchestrator-core:latest"
     environment:
       <<: *common-variables
-      ENABLE_WEBSOCKETS: False
+      ENABLE_WEBSOCKETS: "False"
     ports:
       - "8080:8080"
     volumes:
