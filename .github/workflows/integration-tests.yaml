@@ -10,8 +10,38 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Start services with docker compose
-        uses: isbang/compose-action@v1.4.1
+      # - name: Create db-data and migrations folders
+      #   uses: isbang/compose-action@v1.4.1
+      #   with:
+      #     services: db-upgrade-heads
+
+      - run: ls -latr
+
+      - run: env | grep -i user
+      - run: echo "CI_USER=`id -u`:`id -g`" >> $GITHUB_ENV
+      - run: env | grep -i user
+
+      - run: docker compose up -d db-upgrade-heads || true
+      - run: id
+      - run: ls -latr
+      - run: ls -latr migrations/
+      - run: ls -latr migrations/
+
+
+
+      - run: sleep 15
+
+      - run: docker compose logs
+      - run: docker compose logs --no-color
+
+
+      - name: Add example migrations
+        run: cp -av examples/????-??-??_*.py migrations/versions/schema
+
+      # - name: Start services with docker compose
+      #   uses: isbang/compose-action@v1.4.1
+
+      - run: docker compose up -d
 
       - name: Setup python
         uses: actions/setup-python@v4
