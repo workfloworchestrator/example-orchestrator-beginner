@@ -46,3 +46,25 @@ docker compose up
 Now point your browser to `http://localhost:3000/` and have a look around. 
 You can use the `New Process` button to create subscription on the defined 
 products.
+
+
+## Integration tests
+
+The folder `tests/integration_tests` contains tests that ensure the example orchestrator app works correctly with the latest orchestrator-core version.
+
+These tests are automatically executed in a github workflow whenever a new orchestrator-core release is created.
+
+You can also run them manually:
+
+Environment setup:
+
+1. Start the example orchestrator with `docker compose` as described in the previous section
+2. Create a virtual environment
+```
+python -m venv .venv && source .venv/bin/activate
+pip install requests pytest
+```
+3. Run the tests (**WARNING** this will remove all subscriptions in the local database):
+```
+pytest tests/integration_tests
+```
