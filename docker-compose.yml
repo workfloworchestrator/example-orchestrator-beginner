@@ -20,7 +20,7 @@ services:
   # orchestrator-core
   #
   orchestrator:
-    image: "ghcr.io/workfloworchestrator/orchestrator-core:latest"
+    image: "ghcr.io/workfloworchestrator/orchestrator-core:${CORE_VERSION:-latest}"
     user: "${CI_USER:-}"
     environment:
       <<: *common-variables
@@ -36,7 +36,7 @@ services:
   # orchestrator db upgrade heads
   #
   db-upgrade-heads:
-    image: "ghcr.io/workfloworchestrator/orchestrator-core:latest"
+    image: "ghcr.io/workfloworchestrator/orchestrator-core:${CORE_VERSION:-latest}"
     command: ["python", "main.py", "db", "upgrade", "heads"]
     user: "${CI_USER:-}"
     environment:
@@ -50,7 +50,7 @@ services:
   # orchestrator db init
   #
   db-init:
-    image: "ghcr.io/workfloworchestrator/orchestrator-core:latest"
+    image: "ghcr.io/workfloworchestrator/orchestrator-core:${CORE_VERSION:-latest}"
     command: ["sh", "-c", "test -d migrations || python main.py db init"]
     user: "${CI_USER:-}"
     environment:
@@ -79,17 +79,6 @@ services:
       timeout: "2s"
       retries: 20
       start_period: "5s"
-    # depends_on:
-    #   db-data:
-    #     condition: service_completed_successfully
-  # #
-  # # create db-data folder
-  # #
-  # db-data:
-  #   image: 'busybox:latest'
-  #   command: ["sh", "-c", "test -d db-data || mkdir db-data"]
-  #   volumes:
-  #     - ${GITHUB_WORKSPACE:-.}:/home/orchestrator
 
 volumes:
   db-data:
