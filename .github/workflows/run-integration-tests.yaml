@@ -1,8 +1,11 @@
-name: Run integration tests
+name: Integration tests
 
 on:
   workflow_dispatch:
-  # TODO add trigger
+  workflow_call:
+
+env:
+  CORE_VERSION: latest  # TODO change to edge
 
 jobs:
   integration-test:
