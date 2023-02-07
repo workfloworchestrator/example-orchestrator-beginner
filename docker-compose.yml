@@ -72,21 +72,24 @@ services:
       POSTGRES_PASSWORD: nwa
       POSTGRES_DB: orchestrator-core
     volumes:
-      - ${GITHUB_WORKSPACE:-.}/db-data/:/var/lib/postgresql/data/
+      - db-data:/var/lib/postgresql/data/
     healthcheck:
       test: ["CMD", "pg_isready", "--username", "nwa", "--dbname", "orchestrator-core"]
       interval: "3s"
       timeout: "2s"
       retries: 20
       start_period: "5s"
-    depends_on:
-      db-data:
-        condition: service_completed_successfully
-  #
-  # create db-data folder
-  #
+    # depends_on:
+    #   db-data:
+    #     condition: service_completed_successfully
+  # #
+  # # create db-data folder
+  # #
+  # db-data:
+  #   image: 'busybox:latest'
+  #   command: ["sh", "-c", "test -d db-data || mkdir db-data"]
+  #   volumes:
+  #     - ${GITHUB_WORKSPACE:-.}:/home/orchestrator
+
+volumes:
   db-data:
-    image: 'busybox:latest'
-    command: ["sh", "-c", "test -d db-data || mkdir db-data"]
-    volumes:
-      - ${GITHUB_WORKSPACE:-.}:/home/orchestrator
