@@ -20,14 +20,15 @@ services:
   # orchestrator-core
   #
   orchestrator:
-    image: "ghcr.io/workfloworchestrator/orchestrator-core:latest"
+    image: "ghcr.io/workfloworchestrator/orchestrator-core:${CORE_VERSION:-latest}"
+    user: "${CI_USER:-}"
     environment:
       <<: *common-variables
-      ENABLE_WEBSOCKETS: False
+      ENABLE_WEBSOCKETS: "False"
     ports:
       - "8080:8080"
     volumes:
-      - .:/home/orchestrator
+      - ${GITHUB_WORKSPACE:-.}:/home/orchestrator
     depends_on:
       db-upgrade-heads:
         condition: service_completed_successfully
@@ -35,12 +36,13 @@ services:
   # orchestrator db upgrade heads
   #
   db-upgrade-heads:
-    image: "ghcr.io/workfloworchestrator/orchestrator-core:latest"
+    image: "ghcr.io/workfloworchestrator/orchestrator-core:${CORE_VERSION:-latest}"
     command: ["python", "main.py", "db", "upgrade", "heads"]
+    user: "${CI_USER:-}"
     environment:
       <<: *common-variables
     volumes:
-      - .:/home/orchestrator
+      - ${GITHUB_WORKSPACE:-.}:/home/orchestrator
     depends_on:
       db-init:
         condition: service_completed_successfully
@@ -48,12 +50,13 @@ services:
   # orchestrator db init
   #
   db-init:
-    image: "ghcr.io/workfloworchestrator/orchestrator-core:latest"
+    image: "ghcr.io/workfloworchestrator/orchestrator-core:${CORE_VERSION:-latest}"
     command: ["sh", "-c", "test -d migrations || python main.py db init"]
+    user: "${CI_USER:-}"
     environment:
       <<: *common-variables
     volumes:
-      - .:/home/orchestrator
+      - ${GITHUB_WORKSPACE:-.}:/home/orchestrator
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,21 +72,13 @@ services:
       POSTGRES_PASSWORD: nwa
       POSTGRES_DB: orchestrator-core
     volumes:
-      - ./db-data/:/var/lib/postgresql/data/
+      - db-data:/var/lib/postgresql/data/
     healthcheck:
       test: ["CMD", "pg_isready", "--username", "nwa", "--dbname", "orchestrator-core"]
       interval: "3s"
       timeout: "2s"
       retries: 20
       start_period: "5s"
-    depends_on:
-      db-data:
-        condition: service_completed_successfully
-  #
-  # create db-data folder
-  #
+
+volumes:
   db-data:
-    image: 'busybox:latest'
-    command: ["sh", "-c", "test -d db-data || mkdir db-data"]
-    volumes:
-      - .:/home/orchestrator

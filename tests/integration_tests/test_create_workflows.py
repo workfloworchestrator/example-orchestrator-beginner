@@ -1,44 +1,35 @@
-import time
+from tests.integration_tests.helpers import (
+    create_user,
+    create_user_group,
+    get_domain_model,
+)
 
-import requests
 
-from tests.integration_tests.helpers import API_URL
-
-
-def test_create_user_group(products):
+def test_create_user_group_empty(products):
     group_name = "Group One"
 
-    user_group_id = products["UserGroup"]
+    group_id = create_user_group(products, group_name)
 
-    create_response = requests.post(
-        f"{API_URL}/processes/create_user_group",
-        json=[{"product": user_group_id}, {"group_name": group_name}],
-    )
+    group = get_domain_model(group_id)
 
-    assert create_response.ok
+    assert group["description"] == f"User Group {group_name}"
+    assert group["product"]["name"] == "User Group"
+    assert group["user_group"]["group_name"] == group_name
 
-    process_id = create_response.json()["id"]
 
-    create_wf = None
+def test_create_user_group_with_users(products):
+    group_name = "Group Two"
 
-    for _ in range(3):
-        status_response = requests.get(f"{API_URL}/processes/{process_id}")
-        assert status_response.ok
-        create_wf = status_response.json()
-        if create_wf["status"] == "completed":
-            break
-        time.sleep(1)
+    group_id = create_user_group(products, group_name)
 
-    assert create_wf["status"] == "completed"
+    user_ext_id = create_user(products, group_id, "User external", "my_external_user", 30)
+    user_int_id = create_user(products, group_id, "User internal", "my_internal_user", 40)
 
-    subscription_id = create_wf["subscriptions"][0]["subscription_id"]
+    user_ext = get_domain_model(user_ext_id)
+    user_int = get_domain_model(user_int_id)
 
-    domain_model_response = requests.get(
-        f"{API_URL}/subscriptions/domain-model/{subscription_id}"
-    )
-    assert domain_model_response.ok
-    domain_model = domain_model_response.json()
+    assert user_ext["description"] == "User my_external_user from group Group Two (external)"
+    assert user_int["description"] == "User my_internal_user from group Group Two (internal)"
 
-    assert domain_model["description"] == f"User Group {group_name}"
-    assert domain_model["product"]["name"] == "User Group"
-    assert domain_model["user_group"]["group_name"] == group_name
+    assert user_ext["user"]["group"]["group_name"] == group_name
+    assert user_int["user"]["group"]["group_name"] == group_name
