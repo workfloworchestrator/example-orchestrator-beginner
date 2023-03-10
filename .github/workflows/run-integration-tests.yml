@@ -19,6 +19,10 @@ jobs:
 
       - run: docker compose up -d db-upgrade-heads
 
+      - name: Docker compose logs in case of failure
+        run: docker compose logs --timestamps
+        if: ${{ failure() }}
+
       - name: Wait for db-upgrade-heads to finish
         run: sleep 15
 
@@ -26,6 +30,13 @@ jobs:
         run: cp -av examples/????-??-??_*.py migrations/versions/schema
 
       - run: docker compose up -d
+
+      - name: Docker compose logs in case of failure
+        run: docker compose logs --timestamps
+        if: ${{ failure() }}
+
+      - name: Add orchestrator-core image details to summary
+        run: echo -e "# orchestrator-core image details\n\n\`\`\`json\n`docker compose images orchestrator --format json | jq`\n\`\`\`\n" >> $GITHUB_STEP_SUMMARY
 
       - name: Setup python
         uses: actions/setup-python@v4
@@ -37,4 +48,3 @@ jobs:
 
       - name: Run tests
         run: pytest tests/integration_tests -vvv
-

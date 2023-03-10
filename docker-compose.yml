@@ -64,7 +64,7 @@ services:
   # postgres
   #
   postgres:
-    image: 'postgres:latest'
+    image: 'postgres:13'
     ports:
       - "5432:5432"
     environment:
