@@ -35,6 +35,9 @@ jobs:
         run: docker compose logs --timestamps
         if: ${{ failure() }}
 
+      - name: Add orchestrator-core image details to summary
+        run: echo -e "# orchestrator-core image details\n\n\`\`\`json\n`docker compose images orchestrator --format json | jq`\n\`\`\`\n" >> $GITHUB_STEP_SUMMARY
+
       - name: Setup python
         uses: actions/setup-python@v4
         with:
@@ -45,4 +48,3 @@ jobs:
 
       - name: Run tests
         run: pytest tests/integration_tests -vvv
-
