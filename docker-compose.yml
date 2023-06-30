@@ -25,6 +25,7 @@ services:
     environment:
       <<: *common-variables
       ENABLE_WEBSOCKETS: "False"
+      OIDC_CONF_WELL_KNOWN_URL: http://localhost:8081/realms/development
     ports:
       - "8080:8080"
     volumes:
@@ -79,6 +80,51 @@ services:
       timeout: "2s"
       retries: 20
       start_period: "5s"
+
+  postgres-keycloak:
+    image: 'postgres:13'
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - ./keycloak/data/:/var/lib/postgresql/data/
+
+  keycloak:
+    depends_on:
+      - postgres-keycloak
+    container_name: local_keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_PROXY: edge
+      KC_METRICS_ENABLED: true
+      DB_VENDOR: postgres
+      DB_ADDR: postgres-keycloak
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
+    image: 'quay.io/keycloak/keycloak:21.1.1'
+    ports:
+      - "8081:8080"
+    command: ["start-dev", "--health-enabled", "true"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health/"]
+    # restart: unless-stopped
+
+  keycloak-seed:
+    depends_on:
+      - keycloak
+    build:
+      context: .
+      dockerfile: ./keycloak/Dockerfile-init
+    volumes:
+      - ./keycloak/init.py:/init.py
+    command: ["python", "/init.py"]
+
 
 volumes:
   db-data:
