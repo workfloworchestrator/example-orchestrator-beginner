@@ -25,6 +25,7 @@ services:
     environment:
       <<: *common-variables
       ENABLE_WEBSOCKETS: "False"
+      OAUTH2_ACTIVE: False
     ports:
       - "8080:8080"
     volumes:

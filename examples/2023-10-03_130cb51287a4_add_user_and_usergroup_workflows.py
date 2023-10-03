@@ -1,61 +1,59 @@
-"""add User and UserGroup workflows.
+"""add user and usergroup workflows.
 
-Revision ID: 8040c515d356
-Revises: 45984f4b8010
-Create Date: 2022-11-12 17:05:37.434142
+Revision ID: 130cb51287a4
+Revises: 94d04a8973c0
+Create Date: 2023-10-03 16:41:06.901425
 
 """
-# flake8: noqa
-
 import sqlalchemy as sa
 from alembic import op
-from orchestrator.migrations.helpers import create_workflow, delete_workflow
-from orchestrator.targets import Target
 
 # revision identifiers, used by Alembic.
-revision = "8040c515d356"
-down_revision = "45984f4b8010"
+revision = '130cb51287a4'
+down_revision = '9a31b6bf3e85'
 branch_labels = None
 depends_on = None
 
 
+from orchestrator.migrations.helpers import create_workflow, delete_workflow
+
 new_workflows = [
     {
         "name": "create_user_group",
-        "target": Target.CREATE,
+        "target": "CREATE",
         "description": "Create user group",
-        "product_type": "UserGroup",
+        "product_type": "UserGroup"
     },
     {
         "name": "modify_user_group",
-        "target": Target.MODIFY,
+        "target": "MODIFY",
         "description": "Modify user group",
-        "product_type": "UserGroup",
+        "product_type": "UserGroup"
     },
     {
         "name": "terminate_user_group",
-        "target": Target.TERMINATE,
+        "target": "TERMINATE",
         "description": "Terminate user group",
-        "product_type": "UserGroup",
+        "product_type": "UserGroup"
     },
     {
         "name": "create_user",
-        "target": Target.CREATE,
+        "target": "CREATE",
         "description": "Create user",
-        "product_type": "User",
+        "product_type": "User"
     },
     {
         "name": "modify_user",
-        "target": Target.MODIFY,
+        "target": "MODIFY",
         "description": "Modify user",
-        "product_type": "User",
+        "product_type": "User"
     },
     {
         "name": "terminate_user",
-        "target": Target.TERMINATE,
+        "target": "TERMINATE",
         "description": "Terminate user",
-        "product_type": "User",
-    },
+        "product_type": "User"
+    }
 ]
 
 

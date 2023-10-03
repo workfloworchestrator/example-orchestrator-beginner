@@ -60,7 +60,7 @@ def _provision_in_user_management_system(username: str, age: int) -> int:
 
 @step("Create subscription")
 def create_subscription(product: UUIDstr) -> State:
-    subscription = UserInactive.from_product_id(product, uuid4())
+    subscription = UserInactive.from_product_id(product, str(uuid4()))
 
     return {"subscription": subscription, "subscription_id": subscription.subscription_id}
 
